@@ -1,0 +1,22 @@
+name = "cloudmember-master"
+main = "_worker.js"
+compatibility_date = "2026-06-04"
+
+[assets]
+directory = "."
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cloudmember-master-db"
+database_id = "ISI_DATABASE_ID_D1_MASTER"
+
+[vars]
+INSTALLATION_MODE = "master"
+MASTER_UPDATE_URL = "https://domain-master-anda.com/version.json"
+LICENSE_SERVER_URL = "https://domain-master-anda.com/"
+ADMIN_SESSION_SECRET = "ganti-dengan-kalimat-rahasia-panjang"
+CRON_TOKEN = "ganti-token-cron-manual"
+
+[triggers]
+crons = ["0 * * * *"]

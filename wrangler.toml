@@ -1,0 +1,11 @@
+name = "sheetflare-worker"
+main = "src/index.js"
+compatibility_date = "2024-04-20"
+account_id = "1b0c03d798d291df61eae2e70dac2963"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "panarakids"
+database_id = "bee1462a-8488-4e9b-a814-a88aa43090de"
+[triggers]
+crons = ["0 * * * *"] # Ini artinya cek otomatis SETIAP JAM

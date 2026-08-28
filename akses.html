@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <script>
+        if (!localStorage.getItem('user_email')) {
+            window.location.replace('/member');
+        }
+    </script>
+
+    <link rel="preconnect" href="https://script.google.com">
+    <link rel="dns-prefetch" href="https://script.google.com">
+    <link rel="preconnect" href="https://script.googleusercontent.com">
+    <link rel="dns-prefetch" href="https://script.googleusercontent.com">
+
+    <script src="config.js?v=2026"></script>
+    
+    <script>
+        (function() {
+            window.waAdminGlobal = '';
+
+            let cachedFav = localStorage.getItem('site_favicon');
+            function applyFavicon(url) {
+                if(!url) return;
+                let link = document.querySelector("link[rel~='icon']");
+                if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+                link.href = url;
+            }
+
+            function applyBrandSettings(data) {
+                // 1. Setup Favicon
+                applyFavicon(data.site_favicon);
+                if(data.wa_admin) window.waAdminGlobal = data.wa_admin;
+
+                // ==========================================
+                // FORMULA WARNA TEMA DINAMIS (THEME INJECTOR)
+                // ==========================================
+                if(data.theme_color) {
+                    let themeStyle = document.getElementById('dynamic-theme');
+                    if (!themeStyle) {
+                        themeStyle = document.createElement('style');
+                        themeStyle.id = 'dynamic-theme';
+                        document.head.appendChild(themeStyle);
+                    }
+                    
+                    themeStyle.innerHTML = `
+                        :root {
+                            --brand-blue: ${data.theme_color} !important;
+                        }
+                        .btn-primary, .bg-brand-blue { background-color: ${data.theme_color} !important; color: #ffffff !important; }
+                        .text-brand-blue { color: ${data.theme_color} !important; }
+                        .border-brand-blue { border-color: ${data.theme_color} !important; }
+                        #loading-spinner { border-top-color: ${data.theme_color} !important; }
+                        .access-card { border-top: 5px solid ${data.theme_color} !important; }
+                    `;
+                }
+                // ==========================================
+                
+                if(data.site_name) {
+                    if (!document.title.includes(data.site_name)) {
+                        document.title = "Akses Materi - " + data.site_name;
+                    }
+                    const updateDomElements = () => {
+                        document.querySelectorAll('.dyn-site-name').forEach(el => { el.innerText = data.site_name; });
+                    };
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', updateDomElements);
+                    } else {
+                        updateDomElements();
+                    }
+                }
+            }
+
+            const CACHE_KEY = 'melimpah_global_settings';
+            if(cachedFav) applyFavicon(cachedFav);
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) { applyBrandSettings(JSON.parse(cachedData)); }
+
+            fetch(window.location.origin, { method: 'POST', body: JSON.stringify({ action: 'get_global_settings' }) })
+                .then(res => res.json())
+                .then(r => {
+                    if(r.status === 'success') {
+                        localStorage.setItem(CACHE_KEY, JSON.stringify(r.data));
+                        if(r.data.site_favicon && cachedFav !== r.data.site_favicon) { localStorage.setItem('site_favicon', r.data.site_favicon); cachedFav = r.data.site_favicon; }
+                        applyBrandSettings(r.data);
+                    }
+                }).catch(e => {});
+        })();
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akses Materi</title>
+    
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --brand-blue: #DC2626;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-500: #64748b;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--slate-50); color: var(--slate-900); margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+        .bg-brand-blue { background-color: var(--brand-blue); }
+        .text-brand-blue { color: var(--brand-blue); }
+
+        .header { background: white; border-bottom: 1px solid var(--slate-200); padding: 1rem; position: sticky; top: 0; z-index: 50; }
+        .header-content { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+
+        .main-container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; flex: 1; width: 100%; }
+        
+        .access-card { background: white; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid var(--slate-200); text-align: center; }
+        
+        .icon-box { width: 5rem; height: 5rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+        
+        .prod-title { font-size: 1.875rem; font-weight: 900; margin-bottom: 1rem; color: var(--slate-900); line-height: 1.2; }
+        .prod-desc { color: var(--slate-500); line-height: 1.6; margin-bottom: 2rem; font-size: 1.1rem; }
+
+        .btn-primary { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
+            background-color: var(--brand-blue); color: white; border: none; 
+            padding: 1rem 2rem; border-radius: 99px; font-weight: 800; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s; text-decoration: none;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 170, 231, 0.3); }
+
+        #loading-state { text-align: center; padding: 5rem 1rem; }
+        #loading-spinner { width: 3.5rem; height: 3.5rem; border: 5px solid #fef2f2; border-top-color: var(--brand-blue); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #error-state { display: none; text-align: center; padding: 4rem 1rem; background: #fff1f2; border: 1px solid #fecaca; border-radius: 1rem; }
+
+        .footer { padding: 2rem; text-align: center; color: var(--slate-500); font-size: 0.875rem; }
+        
+        .back-link {
+            display: inline-flex; align-items: center; gap: 0.5rem; color: var(--slate-500);
+            font-weight: 700; font-size: 0.9rem; text-decoration: none; margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--brand-blue); }
+
+        @media (max-width: 480px) {
+            .main-container { padding: 0 0.75rem; margin: 1.25rem auto; }
+            .access-card { padding: 1.5rem 1.25rem; }
+            .prod-title { font-size: 1.35rem; }
+            .prod-desc { font-size: 0.95rem; margin-bottom: 1.5rem; }
+            .btn-primary { width: 100%; padding: 0.9rem 1rem; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 900;">
+                <i data-lucide="shield-check" class="text-brand-blue"></i>
+                <span class="dyn-site-name">AlvinTools</span>
+            </div>
+            <button onclick="logout()" style="background: none; border: none; color: var(--slate-500); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
+                <i data-lucide="log-out" style="width: 1.1rem;"></i> Keluar
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <a href="/member" class="back-link">
+            <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i> Kembali ke Member Area
+        </a>
+
+        <div id="loading-state">
+            <div id="loading-spinner"></div>
+            <h2 style="font-weight: 800; color: var(--slate-800);">Menyiapkan Akses...</h2>
+            <p style="color: var(--slate-500); margin-top: 0.5rem;">Memverifikasi status akses Anda.</p>
+        </div>
+
+        <div id="error-state">
+            <i data-lucide="alert-circle" style="width: 4rem; height: 4rem; color: #e11d48; margin-bottom: 1.5rem;"></i>
+            <h2 style="font-weight: 900; color: #9f1239; margin-bottom: 0.5rem;">Akses Dibatasi</h2>
+            <p id="error-msg" style="color: #be123c; margin-bottom: 2rem; line-height: 1.5;"></p>
+            <a href="/member" class="btn-primary" style="background-color: #0f172a;">Kembali ke Dashboard</a>
+        </div>
+
+        <div id="content-ready" style="display: none;">
+            <div class="access-card">
+                <div class="icon-box bg-brand-blue" style="color: white;">
+                    <i data-lucide="unlock" style="width: 2.5rem; height: 2.5rem;"></i>
+                </div>
+                <h1 id="p-title" class="prod-title">Judul Materi</h1>
+                <p id="p-desc" class="prod-desc">Terima kasih, akses Anda sudah aktif. Silakan klik tombol di bawah untuk mulai membuka seluruh materi dan aset digital Anda.</p>
+                
+                <a id="p-url" href="#" class="btn-primary">
+                    <i data-lucide="arrow-right"></i> MULAI AKSES SEKARANG
+                </a>
+                
+                <p style="margin-top: 2rem; font-size: 0.8rem; color: var(--slate-500); font-style: italic;">
+                    *Jika tombol tidak berfungsi, silakan hubungi tim support kami.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; <span id="year"></span> <span class="dyn-site-name">Platform Digital</span>. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        const userEmail = localStorage.getItem('user_email');
+        const DASHBOARD_CACHE_KEY = 'melimpah_user_data';
+
+        function showError(msg) {
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('content-ready').style.display = 'none';
+            document.getElementById('error-state').style.display = 'block';
+            document.getElementById('error-msg').innerText = msg;
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function renderAccessUI(p) {
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('content-ready').style.display = 'block';
+            document.getElementById('p-title').innerText = p.title;
+            if (p.desc) document.getElementById('p-desc').innerText = p.desc;
+            document.getElementById('p-url').href = p.url;
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        async function verifyAccess() {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+            if (!productId) { window.location.replace('/member'); return; }
+
+            const cacheKeyUser = DASHBOARD_CACHE_KEY + '_' + userEmail;
+            const cachedDataStr = localStorage.getItem(cacheKeyUser);
+            let accessGrantedFromCache = false;
+
+            if (cachedDataStr) {
+                try {
+                    const r = JSON.parse(cachedDataStr);
+                    const product = r.owned.find(p => p.id === productId);
+                    if (product) {
+                        renderAccessUI(product);
+                        accessGrantedFromCache = true;
+                    }
+                } catch(e) {}
+            }
+
+            try {
+                const res = await fetch(window.location.origin, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'get_products', email: userEmail }) 
+                });
+                const r = await res.json();
+
+                if (r.status === 'success') {
+                    const freshDataStr = JSON.stringify(r);
+                    if(cachedDataStr !== freshDataStr) {
+                        localStorage.setItem(cacheKeyUser, freshDataStr);
+                    }
+                    const product = r.owned.find(p => p.id === productId);
+
+                    if (product) {
+                        if(!accessGrantedFromCache) renderAccessUI(product);
+                    } else {
+                        showError("Maaf, Anda belum memiliki akses ke produk ini atau tagihan Anda belum lunas.");
+                    }
+                } else {
+                    if(!accessGrantedFromCache) showError("Gagal menghubungi server verifikasi.");
+                }
+            } catch (err) {
+                if(!accessGrantedFromCache) showError("Koneksi bermasalah. Pastikan internet Anda stabil.");
+            }
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            localStorage.removeItem(DASHBOARD_CACHE_KEY + '_' + userEmail);
+            window.location.replace('/member');
+        }
+
+        window.onload = () => {
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+            verifyAccess();
+        };
+    </script>
+</body>
+</html>
