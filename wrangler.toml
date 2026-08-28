@@ -1,7 +1,7 @@
-name = "sheetflare-worker"
+name = "cloudmember-alvintools"
 main = "_worker.js"
-compatibility_date = "2024-04-20"
-account_id = "1b0c03d798d291df61eae2e70dac2963"
+compatibility_date = "2026-04-20"
+account_id = "b945ec26283730ad8c450205350398f8"
 
 [assets]
 directory = "."
@@ -9,8 +9,8 @@ binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "panarakids"
-database_id = "bee1462a-8488-4e9b-a814-a88aa43090de"
+database_name = "alvintools"
+database_id = "65319e03-8e26-41e2-b438-7d9ed66a4e4d"
 
 [triggers]
 crons = ["0 * * * *"] # Ini artinya cek otomatis SETIAP JAM
