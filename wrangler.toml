@@ -1,11 +1,22 @@
-name = "sheetflare-worker"
-main = "src/index.js"
-compatibility_date = "2024-04-20"
-account_id = "1b0c03d798d291df61eae2e70dac2963"
+name = "cloudmember-client"
+main = "_worker.js"
+compatibility_date = "2026-06-04"
+
+[assets]
+directory = "."
+binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "panarakids"
-database_id = "bee1462a-8488-4e9b-a814-a88aa43090de"
+database_name = "alvintools"
+database_id = "65319e03-8e26-41e2-b438-7d9ed66a4e4d"
+
+[vars]
+INSTALLATION_MODE = "master"
+MASTER_UPDATE_URL = "https://domain-kamu.com/version.json"
+LICENSE_SERVER_URL = "https://domain-kamu.com/"
+ADMIN_SESSION_SECRET = "alvinbelajarsemangat-x7K9pQ2mZ4"
+CRON_TOKEN = "crn_8xK2mP9qL4wZ7vN1tR6sYcB3"
+
 [triggers]
-crons = ["0 * * * *"] # Ini artinya cek otomatis SETIAP JAM
+crons = ["0 * * * *"]
